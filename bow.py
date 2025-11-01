@@ -4,7 +4,7 @@ import math
 
 st.set_page_config(page_title="Bag of Words Visualizer", layout="wide")
 
-st.title("🧠 Bag of Words Visualizer (No NLTK)")
+st.title("Bag of Words and TFIDF")
 
 # --- Input Section ---
 st.subheader("Enter Three Documents")
