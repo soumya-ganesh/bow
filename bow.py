@@ -68,4 +68,34 @@ if st.button("Generate Tables"):
                 "Doc3 (TF)": tf[2][i],
             })
         combined_df = pd.DataFrame(combined_data).set_index("Word")
-        show_left_a
+        show_left_aligned(combined_df)
+
+        # Step 4: Document Frequency (DF)
+        st.subheader("📄 Document Frequency (DF) Table")
+        df_counts = []
+        for word in vocab:
+            df_counts.append(sum(1 for doc in docs if word in doc))
+        df_table = pd.DataFrame({"Word": vocab, "Document Frequency": df_counts}).set_index("Word")
+        show_left_aligned(df_table)
+
+        # Step 5: Inverse Document Frequency (IDF)
+        st.subheader("🔢 Inverse Document Frequency (IDF) Table")
+        num_docs = len(docs)
+        idf = {word: f"{num_docs}/{df_counts[i]}" for i, word in enumerate(vocab)}
+        idf_table = pd.DataFrame({
+            "Word": vocab,
+            "IDF Formula (No Calculation)": [idf[word] for word in vocab]
+        }).set_index("Word")
+        show_left_aligned(idf_table)
+
+        # Step 6: TF-IDF (as expression, not calculated)
+        st.subheader("🧮 TF × log(IDF) Formula Table (Using TF from BoW Table)")
+        tfidf_display = []
+        for i in range(len(docs)):
+            tfidf_display.append([
+                f"{tf[i][j]} × log({idf[vocab[j]]})"
+                for j in range(len(vocab))
+            ])
+
+        tfidf_df = pd.DataFrame(tfidf_display, columns=vocab, index=["Doc1", "Doc2", "Doc3"])
+        show_left_aligned(tfidf_df)
