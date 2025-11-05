@@ -18,8 +18,7 @@ def show_left_aligned(df):
     )
 
 # --- Input Section ---
-st.subheader("Enter Three Documents.")
-st.markdown("#### Type the documents without a fullstop at the end. Eg: Aman and Anil were stressed")
+st.subheader("Enter Three Documents")
 doc1 = st.text_area("Document 1")
 doc2 = st.text_area("Document 2")
 doc3 = st.text_area("Document 3")
@@ -27,7 +26,7 @@ doc3 = st.text_area("Document 3")
 # --- Process Button ---
 if st.button("Generate Tables"):
     if not doc1 or not doc2 or not doc3:
-        st.warning("Please fill in all three documents.")
+        st.warning("Please fill in all three documents.Type the documents without a fullstop at the end.")
     else:
         # --- Step 1: Tokenize ---
         docs = [doc.lower().strip().split() for doc in [doc1, doc2, doc3]]
@@ -61,34 +60,27 @@ if st.button("Generate Tables"):
         st.write(", ".join(vocab))
 
         # --- Combined Bag of Words & Term Frequency Table ---
-        st.subheader("Bag of Words and Term Frequency Table")
-        combined_data = []
-        for i in range(len(vocab)):
-            combined_data.append({
-                "Word": vocab[i],
-                "Document 1 (TF)": bow[0][i],
-                "Document 2 (TF)": bow[1][i],
-                "Document 3 (TF)": bow[2][i],
-                
-            })
-        combined_df = pd.DataFrame(combined_data).set_index("Word")
-        show_left_aligned(combined_df)
+        st.subheader("Bag of Words and Term Frequency Table (Words as Columns)")
 
+        # Create a DataFrame where each row corresponds to a document
+        bow_df = pd.DataFrame(bow, columns=vocab, index=["Document 1", "Document 2", "Document 3"])
+
+        st.markdown("**Document Vector Table/ Term Frequency Table:**")
+        show_left_aligned(bow_df)
+
+               
         # --- Step 5: Document Frequency (DF) ---
         st.subheader("Document Frequency (DF) Table")
         df_counts = []
         for word in vocab:
             df_counts.append(sum(1 for doc in docs if word in doc))
-        df_table = pd.DataFrame({"Word": vocab, "Document Frequency": df_counts}).set_index("Word")
+        df_table =  pd.DataFrame([df_counts], columns=vocab, index=["Document Frequency"])
         show_left_aligned(df_table)
 
         # --- Step 6: Inverse Document Frequency (IDF as ratio) ---
         st.subheader("Inverse Document Frequency (IDF) Table")
         idf_ratio = {word: f"{num_docs}/{df_counts[i]}" for i, word in enumerate(vocab)}
-        idf_table = pd.DataFrame({
-            "Word": vocab,
-            "IDF Formula (No Calculation)": [idf_ratio[word] for word in vocab]
-        }).set_index("Word")
+        idf_table = pd.DataFrame([idf_ratio], columns=vocab, index=["IDF Formula (No Calculation)"])
         show_left_aligned(idf_table)
 
         # --- Step 7: TF-IDF Table (Display as TF x log(N/df)) ---
